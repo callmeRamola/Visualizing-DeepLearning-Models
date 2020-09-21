@@ -1,7 +1,8 @@
 from utils import convertTograyScale, getExampleParams, saveGradientImages
 import torch
 
-from SaliencyMap import SaliencyMap
+#from SaliencyMap import SaliencyMap
+from guidedBackprop import GuidedBackprop
 
 
 
@@ -13,18 +14,18 @@ if __name__ == '__main__':
     (origImg, normImg, targetClass, fileName, pretrainedModel) =\
         getExampleParams(targetExample)
 
-    saliencyMap = SaliencyMap(pretrainedModel)
+    guidedBackprop = GuidedBackprop(pretrainedModel)
 
-    firstLayerGrads = saliencyMap.visualize(normImg, targetClass)
+    firstLayerGrads = guidedBackprop.visualize(normImg, targetClass)
 
     #Save Colored Gradients
-    saveGradientImages(firstLayerGrads, fileName + "_ColoredSaliencyMap")
+    saveGradientImages(firstLayerGrads, fileName + "_ColoredGuiddedBackPropMap")
 
     grayScaleGrads = convertTograyScale(firstLayerGrads)
     
     #Save Gray Scale Images
-    saveGradientImages(grayScaleGrads, fileName + "_GrayScaledSaliencMap")
+    saveGradientImages(grayScaleGrads, fileName + "_GrayScaledGuiddedBackPropMap")
 
-    print("Saliency Map generated. Check your results folder")
+    print("GuidedBackprop generated. Check your results folder")
 
 
