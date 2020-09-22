@@ -52,15 +52,35 @@ class GuidedBackprop():
             
             return (new_grad_out,)
         
+        
+        def get_all_layers(net, forward_hook_fn, backward_hook_fn):
+        
+            for name, layer in net._modules.items():
+            #If it is a sequential, don't register a hook on it
+            # but recursively register hook on all it's module children
+                if isinstance(layer, nn.Sequential):
+                    get_all_layers(layer, forward_hook_fn, backward_hook_fn)
+                else:
+                    # it's a non sequential. Register a hook
+                    if isinstance(layer, nn.ReLU):
+                        layer.register_forward_hook(forward_hook_fn)
+                        layer.register_backward_hook(backward_hook_fn)
+        
         """Change the module : Only Conv layers no flatted fc Linear layers """
+        
+        
+        get_all_layers(self.model.features, forward_hook_fn, backward_hook_fn)
         
         modules = list(self.model.features._modules.items())
         
-        #register hooks to Relu Layers
-        for name, module in modules:
-            if isinstance(module, nn.ReLU):
-                module.register_forward_hook(forward_hook_fn)
-                module.register_backward_hook(backward_hook_fn)
+        # #register hooks to Relu Layers
+        # for name, module in modules:
+        #     if isinstance(module, nn.ReLU):
+        #         module.register_forward_hook(forward_hook_fn)
+        #         module.register_backward_hook(backward_hook_fn)
+                
+                
+        
                 
         #Register hook to the first layer
         first_layer = modules[0][1]
